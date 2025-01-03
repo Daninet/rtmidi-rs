@@ -80,7 +80,7 @@ impl RtMidiIn {
     pub fn new(args: RtMidiInArgs) -> Result<Self, RtMidiError> {
         let client_name = CString::new(args.client_name)?;
         let ptr = unsafe {
-            ffi::rtmidi_in_create(args.api as u32, client_name.as_ptr(), args.queue_size_limit)
+            ffi::rtmidi_in_create(args.api as i32, client_name.as_ptr(), args.queue_size_limit)
         };
         match unsafe { Result::<(), RtMidiError>::from(*ptr) } {
             Ok(_) => Ok(RtMidiIn(ptr)),
@@ -124,7 +124,7 @@ impl RtMidiIn {
     }
 
     /// Return a string identifier for the specified MIDI input port number
-    pub fn port_name(&self, port_number: RtMidiPort) -> Result<&str, RtMidiError> {
+    pub fn port_name(&self, port_number: RtMidiPort) -> Result<String, RtMidiError> {
         midi::port_name(self.0, port_number)
     }
 
@@ -179,7 +179,7 @@ impl RtMidiIn {
     /// message is indicated by a non-zero vector size. An exception is thrown if an error occurs
     /// during message retrieval or an input connection was not previously established.
     pub fn message(&self) -> Result<(f64, Vec<u8>), RtMidiError> {
-        let mut length = 0u64;
+        let mut length = 0usize;
         let mut message = Vec::with_capacity(1024);
         let ptr = message.as_mut_ptr();
         let timestamp = unsafe { ffi::rtmidi_in_get_message(self.0, ptr, &mut length) };

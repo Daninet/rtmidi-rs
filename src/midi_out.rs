@@ -67,7 +67,7 @@ impl RtMidiOut {
     /// order of use is ALSA, JACK (Linux) and CORE, JACK (macOS).
     pub fn new(args: RtMidiOutArgs) -> Result<Self, RtMidiError> {
         let client_name = CString::new(args.client_name)?;
-        let ptr = unsafe { ffi::rtmidi_out_create(args.api as u32, client_name.as_ptr()) };
+        let ptr = unsafe { ffi::rtmidi_out_create(args.api as i32, client_name.as_ptr()) };
         match unsafe { Result::<(), RtMidiError>::from(*ptr) } {
             Ok(_) => Ok(RtMidiOut(ptr)),
             Err(e) => Err(e),
@@ -111,7 +111,7 @@ impl RtMidiOut {
     }
 
     /// Return a string identifier for the specified MIDI output port number
-    pub fn port_name(&self, port_number: RtMidiPort) -> Result<&str, RtMidiError> {
+    pub fn port_name(&self, port_number: RtMidiPort) -> Result<String, RtMidiError> {
         midi::port_name(self.0, port_number)
     }
 

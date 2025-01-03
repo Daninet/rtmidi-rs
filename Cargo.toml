@@ -1,7 +1,7 @@
 [package]
 name = "rtmidi"
-version = "0.2.0"
-authors = ["Rob Hardwick <robhardwick@gmail.com>"]
+version = "0.3.0"
+authors = ["Rob Hardwick <robhardwick@gmail.com>", "Dani Biro <danipro93@gmail.com>"]
 edition = "2018"
 description = "Safe wrapper for RtMidi, realtime MIDI input/output"
 repository = "https://github.com/robhardwick/rtmidi-rs"
@@ -11,5 +11,7 @@ categories = ["multimedia::audio", "api-bindings"]
 license = "MIT"
 
 [build-dependencies]
-bindgen = "0.57.0"
-pkg-config = "0.3.19"
+cmake = "0.1"
+
+[target.'cfg(any(target_os="linux"))'.build-dependencies]
+pkg-config = "0.3"

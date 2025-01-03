@@ -45,14 +45,39 @@ pub fn port_count(ptr: *mut ffi::RtMidiWrapper) -> Result<RtMidiPort, RtMidiErro
 pub fn port_name<'a>(
     ptr: *mut ffi::RtMidiWrapper,
     port_number: RtMidiPort,
-) -> Result<&'a str, RtMidiError> {
-    let port_name = unsafe { ffi::rtmidi_get_port_name(ptr, port_number) };
-    match unsafe { Result::<(), RtMidiError>::from(*ptr) } {
-        Ok(_) if port_name.is_null() => Err(RtMidiError::NullPointer),
-        Ok(_) => {
-            let port_name = unsafe { CStr::from_ptr(port_name) };
-            Ok(port_name.to_str()?)
-        }
-        Err(e) => Err(e),
+) -> Result<String, RtMidiError> {
+    let mut buffer_len: i32 = 0;
+    let size_res = unsafe {
+        ffi::rtmidi_get_port_name(ptr, port_number, std::ptr::null_mut(), &mut buffer_len)
+    };
+
+    if size_res != 0 || buffer_len <= 0 {
+        return Err(RtMidiError::Error(
+            "Error getting port name length".to_string(),
+        ));
+    }
+
+    let mut buffer = vec![0u8; buffer_len as usize];
+
+    let res = unsafe {
+        ffi::rtmidi_get_port_name(
+            ptr,
+            port_number,
+            buffer.as_mut_ptr() as *mut i8,
+            &mut buffer_len,
+        )
+    };
+
+    if res != buffer_len - 1 {
+        return Err(RtMidiError::Error(format!(
+            "Error getting port name: {}",
+            res
+        )));
+    }
+
+    let c_str = unsafe { CStr::from_bytes_with_nul_unchecked(&buffer) };
+    match c_str.to_str() {
+        Ok(s) => Ok(s.to_owned()),
+        Err(e) => Err(RtMidiError::Utf8(e)),
     }
 }
