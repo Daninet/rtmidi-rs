@@ -10,6 +10,13 @@ keywords = ["midi", "audio", "music", "sound"]
 categories = ["multimedia::audio", "api-bindings"]
 license = "MIT"
 
+[features]
+default = ["coreaudio", "alsa", "winmm"]
+coreaudio = []
+alsa = []
+jack_linux = []
+winmm = []
+
 [build-dependencies]
 cmake = "0.1"
 
