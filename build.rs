@@ -59,14 +59,14 @@ fn main() {
     {
         println!("cargo:rustc-link-lib=dylib=c++");
 
-        #[cfg(feature = "coreaudio")]
+        #[cfg(feature = "coremidi")]
         {
             config.define("RTMIDI_API_CORE", "ON");
 
             println!("cargo:rustc-link-lib=framework=CoreFoundation");
-            println!("cargo:rustc-link-lib=framework=CoreAudio");
+            println!("cargo:rustc-link-lib=framework=CoreMidi");
         }
-        #[cfg(not(feature = "coreaudio"))]
+        #[cfg(not(feature = "coremidi"))]
         config.define("RTMIDI_API_CORE", "OFF");
 
         // TODO: Jack support on MacOS

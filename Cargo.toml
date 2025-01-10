@@ -11,8 +11,8 @@ categories = ["multimedia::audio", "api-bindings"]
 license = "MIT"
 
 [features]
-default = ["coreaudio", "alsa", "winmm"]
-coreaudio = []
+default = ["coremidi", "alsa", "winmm"]
+coremidi = []
 alsa = []
 jack_linux = []
 winmm = []
